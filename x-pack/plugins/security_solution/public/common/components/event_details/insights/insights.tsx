@@ -45,6 +45,12 @@ interface Props {
  */
 export const Insights = React.memo<Props>(
   ({ browserFields, eventId, data, isReadOnly, scopeId }) => {
+    console.log('browserFields', browserFields);
+    console.log('eventId', eventId);
+    console.log('data', data);
+    console.log('isReadOnly', isReadOnly);
+    console.log('scopeId', scopeId);
+
     const isRelatedAlertsByProcessAncestryEnabled = useIsExperimentalFeatureEnabled(
       'insightsRelatedAlertsByProcessAncestry'
     );

@@ -6,12 +6,19 @@
  */
 
 import React, { useState } from 'react';
-import { EuiFlexGroup, EuiSpacer } from '@elastic/eui';
+import { EuiFlexGroup } from '@elastic/eui';
+import { Insights } from '../../../../../common/components/event_details/insights/insights';
+import { TableId } from '../../../../../../common/types';
+import { useEventDetailsPanelContext } from '../context';
 import { HeaderSection } from '../../../../../common/components/header_section';
 import { INSIGHTS_TITLE } from '../translations';
 
-export const Insights = () => {
+export const InsightsSection = () => {
+  const { browserFields, dataFormattedForFieldBrowser, searchHit } = useEventDetailsPanelContext();
   const [isPanelExpanded, setIsPanelExpanded] = useState(false);
+
+  const { _id, _index } = searchHit ?? {};
+  if (!_id || !_index) return <></>;
 
   return (
     <EuiFlexGroup gutterSize="none" direction="column">
@@ -25,13 +32,12 @@ export const Insights = () => {
         toggleStatus={isPanelExpanded}
       />
       {isPanelExpanded && (
-        <>
-          <div>{'beginning insights placeholder'}</div>
-          <EuiSpacer size="xxl" />
-          <div>{'middle insights placeholder'}</div>
-          <EuiSpacer size="xxl" />
-          <div>{'end insights placeholder'}</div>
-        </>
+        <Insights
+          browserFields={browserFields}
+          eventId={_id}
+          data={dataFormattedForFieldBrowser}
+          scopeId={TableId.alertsOnAlertsPage}
+        />
       )}
     </EuiFlexGroup>
   );
