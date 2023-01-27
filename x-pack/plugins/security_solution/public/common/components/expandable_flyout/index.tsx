@@ -8,9 +8,12 @@
 import React, { useMemo } from 'react';
 import { css } from '@emotion/react';
 import type { EuiFlyoutProps } from '@elastic/eui';
-import { EuiFlexGroup, EuiFlexItem, EuiFlyout, EuiPanel } from '@elastic/eui';
+import { EuiFlexGroup, EuiFlyout } from '@elastic/eui';
+import { PreviewSection } from './preview_section';
+import { RightSection } from './right_section';
 import { useExpandableFlyoutContext } from '../../../flyout/context';
 import type { SecurityFlyoutPanel } from '../../store/flyout/model';
+import { LeftSection } from './left_section';
 
 export interface ExpandableFlyoutPanel {
   /**
@@ -54,7 +57,6 @@ export const ExpandableFlyout: React.FC<ExpandableFlyoutProps> = ({ panels, ...f
   );
 
   const width: number = (leftSection?.width ?? 0) + (rightSection?.width ?? 0);
-  const previewWith: string = leftSection ? `${leftSection.width}px` : '0px';
 
   return (
     <EuiFlyout
@@ -72,53 +74,21 @@ export const ExpandableFlyout: React.FC<ExpandableFlyoutProps> = ({ panels, ...f
         style={{ height: '100%' }}
       >
         {leftSection && left ? (
-          <EuiFlexItem grow>
-            <EuiFlexGroup direction="column" style={{ maxWidth: leftSection.width, width: 'auto' }}>
-              {leftSection.component({ ...left })}
-            </EuiFlexGroup>
-          </EuiFlexItem>
+          <LeftSection component={leftSection.component({ ...left })} width={leftSection.width} />
         ) : null}
         {rightSection && right ? (
-          <EuiFlexItem grow={false} style={{ height: '100%' }}>
-            <EuiFlexGroup direction="column" style={{ width: rightSection.width }}>
-              {rightSection.component({ ...right })}
-            </EuiFlexGroup>
-          </EuiFlexItem>
+          <RightSection
+            component={rightSection.component({ ...right })}
+            width={rightSection.width}
+          />
         ) : null}
       </EuiFlexGroup>
 
       {previewSection && preview ? (
-        <>
-          <div
-            css={css`
-              position: absolute;
-              top: 0;
-              bottom: 0;
-              right: 0;
-              left: ${previewWith};
-              background-color: #242934;
-              opacity: 0.5;
-            `}
-          />
-          <div
-            css={css`
-              position: absolute;
-              top: 0;
-              bottom: 0;
-              right: 0;
-              left: ${previewWith};
-            `}
-          >
-            <EuiPanel
-              css={css`
-                margin: 8px;
-                height: 100%;
-              `}
-            >
-              {previewSection.component({ ...preview })}
-            </EuiPanel>
-          </div>
-        </>
+        <PreviewSection
+          component={previewSection.component({ ...preview })}
+          width={leftSection?.width}
+        />
       ) : null}
     </EuiFlyout>
   );
