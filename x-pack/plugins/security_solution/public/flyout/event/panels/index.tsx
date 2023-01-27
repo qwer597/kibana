@@ -7,13 +7,11 @@
 
 import React from 'react';
 import { VisualizeDetailsPanelProvider } from './visualize/context';
-import { PreviewDetailsPanel, PreviewDetailsPanelKey } from './preview';
-import { PreviewDetailsPanelProvider } from './preview/context';
 import { EventVisualizePanel, EventVisualizePanelKey } from './visualize';
 import { EventDetailsPanel, EventDetailsPanelKey } from './event';
 import type { ExpandableFlyoutProps } from '../../../common/components/expandable_flyout';
 import { EventDetailsPanelProvider } from './event/context';
-import type { AlertPanel, EventPanel, PreviewPanel, VisualizePanel } from './panel-model';
+import type { AlertPanel, EventPanel, VisualizePanel } from './panel-model';
 import { AlertDetailsPanel, AlertDetailsPanelKey } from './alert-details';
 
 export const expandableFlyoutPanels: ExpandableFlyoutProps['panels'] = [
@@ -33,15 +31,6 @@ export const expandableFlyoutPanels: ExpandableFlyoutProps['panels'] = [
       <VisualizeDetailsPanelProvider {...(props as VisualizePanel).params}>
         <EventVisualizePanel />
       </VisualizeDetailsPanelProvider>
-    ),
-  },
-  {
-    key: PreviewDetailsPanelKey,
-    width: 500,
-    component: (props) => (
-      <PreviewDetailsPanelProvider {...(props as PreviewPanel).params}>
-        <PreviewDetailsPanel />
-      </PreviewDetailsPanelProvider>
     ),
   },
   {

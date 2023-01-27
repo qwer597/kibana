@@ -6,9 +6,8 @@
  */
 
 import React, { useState } from 'react';
-import { EuiButtonEmpty, EuiButtonGroup, EuiSpacer } from '@elastic/eui';
+import { EuiButtonGroup, EuiSpacer } from '@elastic/eui';
 import { useVisualizeDetailsPanelContext } from '../context';
-import { useExpandableFlyoutContext } from '../../../../context';
 import { ANALYZE_GRAPH_ID, AnalyzeGraph } from '../components/analyze_graph';
 import { ANALYZER_GRAPH, SESSION_VIEW, VISUALIZE_OPTIONS } from '../translations';
 import { SESSION_VIEW_ID, SessionView } from '../components/session_view';
@@ -25,8 +24,6 @@ const visualizeButtons = [
 ];
 
 export const VisualizeTab: React.FC = React.memo(() => {
-  const { openPanels } = useExpandableFlyoutContext();
-
   const [activeVisualizationId, setActiveVisualizationId] = useState(SESSION_VIEW_ID);
   const onChangeCompressed = (optionId: string) => {
     setActiveVisualizationId(optionId);
@@ -35,18 +32,6 @@ export const VisualizeTab: React.FC = React.memo(() => {
   const { searchHit } = useVisualizeDetailsPanelContext();
   const { _id, _index } = searchHit ?? {};
   if (!_id || !_index) return <></>;
-
-  const openPreview = () => {
-    openPanels({
-      preview: {
-        key: 'preview',
-        params: {
-          id: _id,
-          indexName: _index,
-        },
-      },
-    });
-  };
 
   return (
     <>
@@ -61,12 +46,7 @@ export const VisualizeTab: React.FC = React.memo(() => {
         isFullWidth
       />
       <EuiSpacer size="m" />
-      {activeVisualizationId === SESSION_VIEW_ID && (
-        <>
-          <EuiButtonEmpty onClick={openPreview}>{'open preview'}</EuiButtonEmpty>
-          <SessionView />
-        </>
-      )}
+      {activeVisualizationId === SESSION_VIEW_ID && <SessionView />}
       {activeVisualizationId === ANALYZE_GRAPH_ID && <AnalyzeGraph />}
     </>
   );

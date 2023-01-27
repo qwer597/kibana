@@ -30,16 +30,6 @@ export interface VisualizePanel extends SecurityFlyoutPanel {
   };
 }
 
-export type PreviewPanelPaths = 'process' | 'hosts' | 'alerts';
-export interface PreviewPanel extends SecurityFlyoutPanel {
-  key?: 'preview';
-  path?: PreviewPanelPaths[];
-  params?: {
-    id: string;
-    indexName: string;
-  };
-}
-
 export interface AlertPanel extends SecurityFlyoutPanel {
   key: 'alert';
   params: {

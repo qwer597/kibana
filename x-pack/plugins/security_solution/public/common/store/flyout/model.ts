@@ -8,7 +8,6 @@
 import type {
   AlertPanel,
   EventPanel,
-  PreviewPanel,
   VisualizePanel,
 } from '../../../flyout/event/panels/panel-model';
 
@@ -18,7 +17,6 @@ export type SecurityFlyoutPanel =
   | EventPanel
   | VisualizePanel
   | AlertPanel
-  | PreviewPanel
   | Record<string | number, never>; // Empty object
 
 export interface SecurityFlyoutLayout {

@@ -57,7 +57,6 @@ export const SessionView = () => {
     onShowAlertDetails: (alertId: string) => void,
     selectedProcess: Process | null
   ) => {
-    debugger;
     openPanels({
       preview: {
         key: 'alert',
