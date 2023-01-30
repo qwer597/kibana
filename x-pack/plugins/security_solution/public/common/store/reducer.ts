@@ -8,6 +8,7 @@
 import type { AnyAction, Reducer } from 'redux';
 import { combineReducers } from 'redux';
 
+import { flyoutsReducer, initialFlyoutState } from './flyout/reducers';
 import { appReducer, initialAppState } from './app';
 import { dragAndDropReducer, initialDragAndDropState } from './drag_and_drop';
 import { createInitialInputsState, inputsReducer } from './inputs';
@@ -29,7 +30,6 @@ import { getScopePatternListSelection } from './sourcerer/helpers';
 import { globalUrlParamReducer, initialGlobalUrlParam } from './global_url_param';
 import type { DataTableState } from './data_table/types';
 import { dataTableReducer } from './data_table/reducer';
-import { flyoutsReducer, initialFlyoutsState } from './flyout/reducers';
 
 export type SubPluginsInitReducer = HostsPluginReducer &
   UsersPluginReducer &
@@ -82,7 +82,7 @@ export const createInitialState = (
     ...pluginsInitState,
     app: { ...initialAppState, enableExperimental },
     dragAndDrop: initialDragAndDropState,
-    flyouts: initialFlyoutsState,
+    flyouts: initialFlyoutState,
     inputs: createInitialInputsState(enableExperimental.socTrendsEnabled),
     sourcerer: {
       ...sourcererModel.initialSourcererState,

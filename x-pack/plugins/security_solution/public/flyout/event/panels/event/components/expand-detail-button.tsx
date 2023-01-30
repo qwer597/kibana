@@ -12,7 +12,7 @@ import { useExpandableFlyoutContext } from '../../../../context';
 import { COLLAPSE_DETAILS_BUTTON, EXPAND_DETAILS_BUTTON } from '../translations';
 
 export const ExpandDetailButton = React.memo(() => {
-  const { closePanels, openPanels, panels } = useExpandableFlyoutContext();
+  const { closeLeftPanel, openLeftPanel, panels } = useExpandableFlyoutContext();
   const isExpanded: boolean = panels.left != null;
 
   const { searchHit } = useEventDetailsPanelContext();
@@ -20,22 +20,16 @@ export const ExpandDetailButton = React.memo(() => {
   if (!_id || !_index) return <></>;
 
   const expandAlertDetails = () => {
-    openPanels({
-      left: {
-        key: 'visualize',
-        params: {
-          id: _id,
-          indexName: _index,
-        },
+    openLeftPanel({
+      key: 'visualize',
+      params: {
+        id: _id,
+        indexName: _index,
       },
     });
   };
 
-  const collapseAlertDetails = () => {
-    closePanels({
-      left: undefined,
-    });
-  };
+  const collapseAlertDetails = () => closeLeftPanel();
 
   return isExpanded ? (
     <EuiButtonEmpty iconSide="left" onClick={collapseAlertDetails} iconType="arrowEnd">

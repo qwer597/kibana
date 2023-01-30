@@ -5,8 +5,5 @@
  * 2.0.
  */
 
-import * as flyoutActions from './actions';
-import * as flyoutSelectors from './selectors';
-import * as flyoutModel from './model';
-
-export { flyoutActions, flyoutModel, flyoutSelectors };
+export * from './model';
+export * from './reducers';

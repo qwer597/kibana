@@ -11,8 +11,6 @@ import type {
   VisualizePanel,
 } from '../../../flyout/event/panels/panel-model';
 
-export type SecurityFlyoutScope = 'global' | 'timeline';
-
 export type SecurityFlyoutPanel =
   | EventPanel
   | VisualizePanel
@@ -20,18 +18,7 @@ export type SecurityFlyoutPanel =
   | Record<string | number, never>; // Empty object
 
 export interface SecurityFlyoutLayout {
-  left?: SecurityFlyoutPanel;
-  right?: SecurityFlyoutPanel;
-  preview?: SecurityFlyoutPanel;
+  left: SecurityFlyoutPanel;
+  right: SecurityFlyoutPanel;
+  preview: SecurityFlyoutPanel[];
 }
-
-export interface SecurityFlyoutReducer {
-  global?: SecurityFlyoutLayout;
-  timeline?: SecurityFlyoutLayout;
-}
-
-export type SecurityFlyoutState = SecurityFlyoutReducer;
-
-export type SecurityFlyoutAction<T = {}> = {
-  scope: SecurityFlyoutScope;
-} & T;

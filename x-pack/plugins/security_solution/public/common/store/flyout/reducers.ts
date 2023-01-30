@@ -5,63 +5,162 @@
  * 2.0.
  */
 
-import { cloneDeep, merge } from 'lodash';
-import { reducerWithInitialState } from 'typescript-fsa-reducers';
-import {
-  closeSecurityFlyout,
-  closeSecurityFlyoutPanels,
-  openSecurityFlyout,
-  openSecurityFlyoutPanels,
-} from './actions';
-import type { SecurityFlyoutState, SecurityFlyoutLayout, SecurityFlyoutReducer } from './model';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
+import { createSelector } from 'reselect';
+import type { State } from '..';
+import type { SecurityFlyoutLayout, SecurityFlyoutPanel } from './model';
 
-export const initialFlyoutsState: SecurityFlyoutState = {};
+export interface SecurityFlyoutState {
+  byId: { [panelId: string]: SecurityFlyoutPanel };
+  leftId: string;
+  rightId: string;
+  previewIds: string[];
+  allIds: string[];
+}
 
-export const flyoutsReducer = reducerWithInitialState(initialFlyoutsState)
-  /**
-   * Open the flyout by overriding the state for the given scope.
-   */
-  .case(openSecurityFlyout, (state, { scope, ...panelProps }) => {
-    const newState: SecurityFlyoutReducer = cloneDeep(state);
-    newState[scope] = {
-      ...panelProps,
-    };
-    return newState;
-  })
-  /**
-   * Close the flyout by removing the scope from the state.
-   */
-  .case(closeSecurityFlyout, (state, { scope }) => {
-    const newState: SecurityFlyoutReducer = cloneDeep(state);
-    delete newState[scope];
-    return newState;
-  })
-  /**
-   * Open/add new panels by adding to the state for the given scope.
-   */
-  .case(openSecurityFlyoutPanels, (state, { scope, ...panelProps }) => {
-    return merge({}, state, {
-      [scope]: {
-        ...panelProps,
+export const initialFlyoutState: SecurityFlyoutState = {
+  byId: {},
+  leftId: '',
+  rightId: '',
+  previewIds: [],
+  allIds: [],
+};
+
+export const flyoutsSlice = createSlice({
+  name: 'flyouts',
+  initialState: initialFlyoutState,
+  reducers: {
+    openSecurityFlyoutPanels: (
+      state,
+      {
+        payload: { left, preview, right },
+      }: PayloadAction<{
+        right?: SecurityFlyoutPanel;
+        left?: SecurityFlyoutPanel;
+        preview?: SecurityFlyoutPanel;
+      }>
+    ) => {
+      const byId: { [panelId: string]: SecurityFlyoutPanel } = {};
+      const allIds: string[] = [];
+
+      if (right) {
+        byId[right.key] = right;
+        allIds.push(right.key);
+      }
+      if (left) {
+        byId[left.key] = left;
+        allIds.push(left.key);
+      }
+      if (preview) {
+        byId[preview.key] = preview;
+        allIds.push(preview.key);
+      }
+
+      return {
+        byId,
+        leftId: left?.key || '',
+        rightId: right?.key || '',
+        previewIds: preview ? [preview.key] : [],
+        allIds,
+      };
+    },
+    openSecurityFlyoutRightPanel: (state, action: PayloadAction<SecurityFlyoutPanel>) => ({
+      byId: {
+        ...state.byId,
+        [action.payload.key]: action.payload,
       },
-    });
-  })
-  /**
-   * Close panels by removing from the state for the given scope.
-   */
-  .case(closeSecurityFlyoutPanels, (state, { scope, ...panelProps }) => {
-    const keys: string[] = Object.keys(panelProps);
-    if (!keys || !keys.length) {
-      return state;
-    }
+      leftId: state.leftId,
+      rightId: action.payload.key,
+      previewIds: state.previewIds,
+      allIds: [...state.allIds, action.payload.key],
+    }),
+    openSecurityFlyoutLeftPanel: (state, action: PayloadAction<SecurityFlyoutPanel>) => ({
+      byId: {
+        ...state.byId,
+        [action.payload.key]: action.payload,
+      },
+      leftId: action.payload.key,
+      rightId: state.rightId,
+      previewIds: state.previewIds,
+      allIds: [...state.allIds, action.payload.key],
+    }),
+    openSecurityFlyoutPreviewPanel: (state, action: PayloadAction<SecurityFlyoutPanel>) => ({
+      byId: {
+        ...state.byId,
+        [action.payload.key]: action.payload,
+      },
+      leftId: state.leftId,
+      rightId: state.rightId,
+      previewIds: [...state.previewIds, action.payload.key],
+      allIds: [...state.allIds, action.payload.key],
+    }),
+    closeSecurityFlyoutRightPanel: (state) => {
+      const byId = { ...state.byId };
+      delete byId[state.rightId];
 
-    const newState: SecurityFlyoutReducer = cloneDeep(state);
-    const scopedFlyout: SecurityFlyoutLayout | undefined = newState[scope];
-    if (!scopedFlyout) {
-      return state;
-    }
+      return {
+        byId,
+        leftId: state.leftId,
+        rightId: '',
+        previewIds: state.previewIds,
+        allIds: state.allIds.filter((id: string) => id !== state.rightId),
+      };
+    },
+    closeSecurityFlyoutLeftPanel: (state) => {
+      const byId = { ...state.byId };
+      delete byId[state.leftId];
 
-    keys.forEach((key: string) => delete scopedFlyout[key]);
-    return newState;
+      return {
+        byId,
+        leftId: '',
+        rightId: state.rightId,
+        previewIds: state.previewIds,
+        allIds: state.allIds.filter((id: string) => id !== state.leftId),
+      };
+    },
+    closeSecurityFlyoutPreviewPanel: (state) => {
+      const byId = { ...state.byId };
+      state.previewIds.forEach((id: string) => delete byId[id]);
+
+      return {
+        byId,
+        leftId: state.leftId,
+        rightId: state.rightId,
+        previewIds: [],
+        allIds: state.allIds.filter((id: string) => state.previewIds.includes(id)),
+      };
+    },
+    closeSecurityFlyoutPanels: () => ({
+      byId: {},
+      leftId: '',
+      rightId: '',
+      previewIds: [],
+      allIds: [],
+    }),
+  },
+});
+
+export const {
+  openSecurityFlyoutPanels,
+  openSecurityFlyoutRightPanel,
+  openSecurityFlyoutLeftPanel,
+  openSecurityFlyoutPreviewPanel,
+  closeSecurityFlyoutRightPanel,
+  closeSecurityFlyoutLeftPanel,
+  closeSecurityFlyoutPreviewPanel,
+  closeSecurityFlyoutPanels,
+} = flyoutsSlice.actions;
+
+const selectFlyouts = (state: State): SecurityFlyoutState => state.flyouts;
+
+export const selectFlyoutLayout = createSelector(
+  selectFlyouts,
+  (flyouts: SecurityFlyoutState): SecurityFlyoutLayout => ({
+    left: flyouts.byId[flyouts.leftId],
+    right: flyouts.byId[flyouts.rightId],
+    preview: flyouts.previewIds.map((id: string) => flyouts.byId[id]),
   })
-  .build();
+);
+
+export const flyoutsReducer = flyoutsSlice.reducer;

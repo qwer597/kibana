@@ -8,11 +8,17 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { noop } from 'lodash/fp';
+import type { SecurityFlyoutPanel } from '../common/store/flyout/panel-model';
+import type { SecurityFlyoutLayout } from '../common/store/flyout/model';
 import {
+  closeSecurityFlyoutLeftPanel,
   closeSecurityFlyoutPanels,
-  openSecurityFlyoutPanels,
-} from '../common/store/flyout/actions';
-import type { SecurityFlyoutLayout, SecurityFlyoutScope } from '../common/store/flyout/model';
+  closeSecurityFlyoutPreviewPanel,
+  closeSecurityFlyoutRightPanel,
+  openSecurityFlyoutLeftPanel,
+  openSecurityFlyoutPreviewPanel,
+  openSecurityFlyoutRightPanel,
+} from '../common/store/flyout/reducers';
 
 export interface ExpandableFlyoutContext {
   /**
@@ -22,30 +28,50 @@ export interface ExpandableFlyoutContext {
   /**
    *
    */
-  scope?: SecurityFlyoutScope;
-  /**
-   *
-   */
   panels: SecurityFlyoutLayout;
   /**
    *
    */
-  openPanels: (configUpdate: Partial<SecurityFlyoutLayout>) => void;
+  openRightPanel: (configUpdate: SecurityFlyoutPanel) => void;
   /**
    *
    */
-  closePanels: (configUpdate: Partial<SecurityFlyoutLayout>) => void;
+  openLeftPanel: (configUpdate: SecurityFlyoutPanel) => void;
+  /**
+   *
+   */
+  openPreviewPanel: (configUpdate: SecurityFlyoutPanel) => void;
+  /**
+   *
+   */
+  closeRightPanel: () => void;
+  /**
+   *
+   */
+  closeLeftPanel: () => void;
+  /**
+   *
+   */
+  closePreviewPanel: () => void;
+  /**
+   *
+   */
+  closePanels: () => void;
 }
 
 export const ExpandableFlyoutContext = createContext<ExpandableFlyoutContext>({
   close: noop,
-  scope: undefined,
   panels: {
     left: undefined,
     right: undefined,
     preview: undefined,
   },
-  openPanels: noop,
+  openRightPanel: noop,
+  openLeftPanel: noop,
+  openPreviewPanel: noop,
+  closeRightPanel: noop,
+  closeLeftPanel: noop,
+  closePreviewPanel: noop,
   closePanels: noop,
 });
 
@@ -54,10 +80,6 @@ export interface ExpandableFlyoutProviderProps {
    *
    */
   close: () => void;
-  /**
-   *
-   */
-  scope: SecurityFlyoutScope;
   /**
    *
    */
@@ -70,37 +92,63 @@ export interface ExpandableFlyoutProviderProps {
 
 export const ExpandableFlyoutProvider = ({
   close,
-  scope,
   layout,
   children,
 }: ExpandableFlyoutProviderProps) => {
   const [panels, setPanels] = useState(layout);
   const dispatch = useDispatch();
 
-  const openPanels = useCallback(
-    (openedPanels: Partial<SecurityFlyoutLayout>) =>
-      dispatch(openSecurityFlyoutPanels({ scope, ...openedPanels })),
-    [dispatch, scope]
+  const openRightPanel = useCallback(
+    (p: SecurityFlyoutPanel) => dispatch(openSecurityFlyoutRightPanel({ ...p })),
+    [dispatch]
   );
 
-  const closePanels = useCallback(
-    (closedPanels: Partial<SecurityFlyoutLayout>) => {
-      dispatch(closeSecurityFlyoutPanels({ scope, ...closedPanels }));
-    },
-    [dispatch, scope]
+  const openLeftPanel = useCallback(
+    (p: SecurityFlyoutPanel) => dispatch(openSecurityFlyoutLeftPanel({ ...p })),
+    [dispatch]
   );
+
+  const openPreviewPanel = useCallback(
+    (p: SecurityFlyoutPanel) => dispatch(openSecurityFlyoutPreviewPanel({ ...p })),
+    [dispatch]
+  );
+
+  const closeRightPanel = useCallback(() => dispatch(closeSecurityFlyoutRightPanel()), [dispatch]);
+
+  const closeLeftPanel = useCallback(() => dispatch(closeSecurityFlyoutLeftPanel()), [dispatch]);
+
+  const closePreviewPanel = useCallback(
+    () => dispatch(closeSecurityFlyoutPreviewPanel()),
+    [dispatch]
+  );
+
+  const closePanels = useCallback(() => dispatch(closeSecurityFlyoutPanels()), [dispatch]);
 
   useEffect(() => setPanels(layout), [layout]);
 
   const contextValue = useMemo(
     () => ({
       close,
-      scope,
       panels,
-      openPanels,
+      openRightPanel,
+      openLeftPanel,
+      openPreviewPanel,
+      closeRightPanel,
+      closeLeftPanel,
+      closePreviewPanel,
       closePanels,
     }),
-    [close, scope, panels, openPanels, closePanels]
+    [
+      close,
+      panels,
+      openRightPanel,
+      openLeftPanel,
+      openPreviewPanel,
+      closeRightPanel,
+      closeLeftPanel,
+      closePreviewPanel,
+      closePanels,
+    ]
   );
 
   return (

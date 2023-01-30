@@ -12,7 +12,7 @@ import type { SecurityFlyoutPanel } from '../../../common/store/flyout/panel-mod
 export type EventPanelPaths = 'overview' | 'table' | 'json';
 
 export interface EventPanel extends SecurityFlyoutPanel {
-  key?: 'event';
+  key: 'event';
   path?: EventPanelPaths[];
   params?: {
     id: string;
@@ -22,7 +22,7 @@ export interface EventPanel extends SecurityFlyoutPanel {
 
 export type VisualizePanelPaths = 'visualize' | 'insights' | 'investigation' | 'history';
 export interface VisualizePanel extends SecurityFlyoutPanel {
-  key?: 'visualize';
+  key: 'visualize';
   path?: VisualizePanelPaths[];
   params?: {
     id: string;

@@ -16,15 +16,15 @@ import { useEventDetailsPanelContext } from '../context';
 export const HighlightedFields = () => {
   const [isPanelExpanded, setIsPanelExpanded] = useState(false);
 
-  const { scope, openPanels } = useExpandableFlyoutContext();
+  const { openRightPanel } = useExpandableFlyoutContext();
   const { dataFormattedForFieldBrowser, browserFields, searchHit } = useEventDetailsPanelContext();
   const eventId = searchHit?._id as string;
 
   const goToTableTab = useCallback(() => {
-    openPanels({ right: { path: ['table'] } });
-  }, [openPanels]);
+    openRightPanel({ path: ['table'] });
+  }, [openRightPanel]);
 
-  const isVisible = dataFormattedForFieldBrowser && browserFields && eventId && scope;
+  const isVisible = dataFormattedForFieldBrowser && browserFields && eventId;
 
   return isVisible ? (
     <EuiFlexGroup gutterSize="none" direction="column">
@@ -42,8 +42,8 @@ export const HighlightedFields = () => {
           data={dataFormattedForFieldBrowser}
           eventId={eventId}
           browserFields={browserFields}
-          isDraggable={scope === 'timeline'}
-          scopeId={scope}
+          isDraggable={false}
+          scopeId={'global'}
           title={HIGHLIGHTED_FIELDS_TITLE}
           isReadOnly={false} // TODO: set properly
           goToTable={goToTableTab}

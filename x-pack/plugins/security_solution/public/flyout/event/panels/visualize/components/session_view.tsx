@@ -16,7 +16,7 @@ import { useKibana } from '../../../../../common/lib/kibana';
 export const SESSION_VIEW_ID = 'session_view';
 
 export const SessionView = () => {
-  const { openPanels } = useExpandableFlyoutContext();
+  const { openPreviewPanel } = useExpandableFlyoutContext();
   const containerRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState<number | undefined>(undefined);
   const { sessionView } = useKibana().services;
@@ -57,20 +57,18 @@ export const SessionView = () => {
     onShowAlertDetails: (alertId: string) => void,
     selectedProcess: Process | null
   ) => {
-    openPanels({
-      preview: {
-        key: 'alert',
-        params: {
-          alerts,
-          alertsCount,
-          isFetchingAlerts,
-          hasNextPageAlerts,
-          fetchNextPageAlerts,
-          investigatedAlertId,
-          onJumpToEvent,
-          onShowAlertDetails,
-          selectedProcess,
-        },
+    openPreviewPanel({
+      key: 'alert',
+      params: {
+        alerts,
+        alertsCount,
+        isFetchingAlerts,
+        hasNextPageAlerts,
+        fetchNextPageAlerts,
+        investigatedAlertId,
+        onJumpToEvent,
+        onShowAlertDetails,
+        selectedProcess,
       },
     });
   };

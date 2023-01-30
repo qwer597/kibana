@@ -11,13 +11,11 @@ import React, { useMemo, useState } from 'react';
 import { HeaderSection } from '../../../../../common/components/header_section';
 import { defaultRowRenderers } from '../../../../../timelines/components/timeline/body/renderers';
 import { getRowRenderer } from '../../../../../timelines/components/timeline/body/renderers/get_row_renderer';
-import { useExpandableFlyoutContext } from '../../../../context';
 import { useEventDetailsPanelContext } from '../context';
 import { REASON_TITLE } from '../translations';
 
 export const ReasonDetails = () => {
   const [isPanelExpanded, setIsPanelExpanded] = useState(false);
-  const { scope } = useExpandableFlyoutContext();
   const { dataAsNestedObject } = useEventDetailsPanelContext();
 
   const renderer = useMemo(
@@ -52,8 +50,8 @@ export const ReasonDetails = () => {
           {renderer.renderRow({
             contextId: 'event-details',
             data: dataAsNestedObject,
-            isDraggable: scope === 'timeline',
-            scopeId: scope ?? '',
+            isDraggable: false,
+            scopeId: 'global',
           })}
         </div>
       )}

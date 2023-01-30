@@ -18,7 +18,7 @@ import { tabs } from './tabs';
 export const EventVisualizePanelKey: VisualizePanel['key'] = 'visualize';
 
 export const EventVisualizePanel: React.FC<VisualizePanel> = React.memo(({ path }) => {
-  const { openPanels } = useExpandableFlyoutContext();
+  const { openLeftPanel } = useExpandableFlyoutContext();
 
   const selectedTabId = useMemo(() => {
     const defaultTab = tabs[0].id;
@@ -27,8 +27,8 @@ export const EventVisualizePanel: React.FC<VisualizePanel> = React.memo(({ path 
   }, [path]);
 
   const setSelectedTabId = (tabId: EventTabsType[number]['id']) => {
-    openPanels({
-      left: { path: [tabId] },
+    openLeftPanel({
+      path: [tabId],
     });
   };
 

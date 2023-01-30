@@ -39,7 +39,8 @@ export interface ExpandableFlyoutProps extends EuiFlyoutProps {
 
 export const ExpandableFlyout: React.FC<ExpandableFlyoutProps> = ({ panels, ...flyoutProps }) => {
   const context = useExpandableFlyoutContext();
-  const { left, right, preview } = context.panels;
+  const { left, right, preview: previewPanels } = context.panels;
+  const preview = previewPanels ? previewPanels[0] : undefined;
 
   const leftSection = useMemo(
     () => panels.find((panel) => panel.key === left?.key),

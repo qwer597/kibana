@@ -8,7 +8,7 @@
 import type { EuiDataGridCellValueElementProps } from '@elastic/eui';
 import React, { useCallback, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
-import { openSecurityFlyout } from '../../../store/flyout/actions';
+import { openSecurityFlyoutPanels } from '../../../store/flyout/reducers';
 import type {
   SetEventsDeleted,
   SetEventsLoading,
@@ -93,8 +93,7 @@ const RowActionComponent = ({
   const handleOnEventDetailPanelOpened = useCallback(() => {
     if (isSecurityFlyoutEnabled) {
       dispatch(
-        openSecurityFlyout({
-          scope: 'global',
+        openSecurityFlyoutPanels({
           right: {
             key: 'event',
             params: {

@@ -9,7 +9,7 @@ export interface SecurityFlyoutPanel {
   /**
    * Unique key to identify the panel
    */
-  key?: string;
+  key: string;
   /**
    * Any parameters necessary for the initial requests within the flyout
    */

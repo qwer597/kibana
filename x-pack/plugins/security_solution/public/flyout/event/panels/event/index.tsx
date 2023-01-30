@@ -16,7 +16,7 @@ import { tabs } from './tabs';
 export const EventDetailsPanelKey: EventPanel['key'] = 'event';
 
 export const EventDetailsPanel: React.FC<EventPanel> = React.memo(({ path }) => {
-  const { openPanels } = useExpandableFlyoutContext();
+  const { openRightPanel } = useExpandableFlyoutContext();
 
   const selectedTabId = useMemo(() => {
     const defaultTab = tabs[0].id;
@@ -25,8 +25,8 @@ export const EventDetailsPanel: React.FC<EventPanel> = React.memo(({ path }) => 
   }, [path]);
 
   const setSelectedTabId = (tabId: EventTabsType[number]['id']) => {
-    openPanels({
-      right: { path: [tabId] },
+    openRightPanel({
+      path: [tabId],
     });
   };
 

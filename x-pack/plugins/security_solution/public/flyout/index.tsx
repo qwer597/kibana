@@ -5,13 +5,11 @@
  * 2.0.
  */
 
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ExpandableFlyoutProvider } from './context';
+import { closeSecurityFlyoutPanels, selectFlyoutLayout } from '../common/store/flyout/reducers';
 import { ExpandableFlyout } from '../common/components/expandable_flyout';
-import { flyoutsSelector } from '../common/store/flyout/selectors';
-import { closeSecurityFlyout } from '../common/store/flyout/actions';
-import type { SecurityFlyoutScope } from '../common/store/flyout/model';
 import { expandableFlyoutPanels } from './event/panels';
 
 export interface SecurityFlyoutProps {
@@ -19,10 +17,6 @@ export interface SecurityFlyoutProps {
    *
    */
   className?: string;
-  /**
-   * We'll have multiple flyout throughout Kibana (see {@link SecurityFlyoutScope})
-   */
-  scope: SecurityFlyoutScope;
   /**
    * Allows developers to run code on close action
    */
@@ -37,26 +31,22 @@ export interface SecurityFlyoutProps {
  * Each section can display a panel, with a certain width.
  * The panel's information are saved in the url to display the flyout identically after refresh.
  */
-export const SecurityFlyout = React.memo(
-  ({ scope, handleOnClose, className }: SecurityFlyoutProps) => {
-    const dispatch = useDispatch();
-    const flyouts = useSelector(flyoutsSelector);
+export const SecurityFlyout = React.memo(({ handleOnClose, className }: SecurityFlyoutProps) => {
+  const dispatch = useDispatch();
+  const flyouts = useSelector(selectFlyoutLayout);
 
-    const scopedFlyout = useMemo(() => flyouts[scope], [flyouts, scope]);
+  const close = useCallback(() => {
+    if (handleOnClose) handleOnClose();
+    dispatch(closeSecurityFlyoutPanels());
+  }, [dispatch, handleOnClose]);
 
-    const close = useCallback(() => {
-      if (handleOnClose) handleOnClose();
-      dispatch(closeSecurityFlyout({ scope }));
-    }, [dispatch, scope, handleOnClose]);
+  if (!flyouts) return null;
 
-    if (!scopedFlyout) return null;
-
-    return (
-      <ExpandableFlyoutProvider scope={scope} close={close} layout={scopedFlyout}>
-        <ExpandableFlyout className={className} panels={expandableFlyoutPanels} onClose={close} />
-      </ExpandableFlyoutProvider>
-    );
-  }
-);
+  return (
+    <ExpandableFlyoutProvider close={close} layout={flyouts}>
+      <ExpandableFlyout className={className} panels={expandableFlyoutPanels} onClose={close} />
+    </ExpandableFlyoutProvider>
+  );
+});
 
 SecurityFlyout.displayName = 'SecurityFlyout';
