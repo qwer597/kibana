@@ -5,20 +5,70 @@
  * 2.0.
  */
 
-import { EuiPanel } from '@elastic/eui';
-import React from 'react';
+import { EuiButtonEmpty, EuiButtonIcon, EuiFlexGroup, EuiFlexItem, EuiPanel } from '@elastic/eui';
+import React, { useCallback } from 'react';
 import { css } from '@emotion/react/dist/emotion-react.cjs';
+import { useDispatch } from 'react-redux';
+import {
+  previousSecurityFlyoutPreviewPanel,
+  closeSecurityFlyoutPreviewPanel,
+} from '../../store/flyout';
+import { BACK_BUTTON } from './translations';
 
 export interface PreviewSectionProps {
+  /**
+   *
+   */
   component: React.ReactElement;
+  /**
+   *
+   */
+  showBackButton: boolean;
+  /**
+   *
+   */
   width: number | undefined;
 }
 
 export const PreviewSection: React.FC<PreviewSectionProps> = ({
   component,
+  showBackButton,
   width,
 }: PreviewSectionProps) => {
+  const dispatch = useDispatch();
+  const closePreviewPanel = useCallback(
+    () => dispatch(closeSecurityFlyoutPreviewPanel()),
+    [dispatch]
+  );
+  const previousPreviewPanel = useCallback(
+    () => dispatch(previousSecurityFlyoutPreviewPanel()),
+    [dispatch]
+  );
+
   const previewWith: string = width ? `${width}px` : '0px';
+
+  const closeButton = (
+    <EuiFlexItem grow={false}>
+      <EuiButtonIcon iconType="cross" onClick={closePreviewPanel} />
+    </EuiFlexItem>
+  );
+  const header = showBackButton ? (
+    <EuiFlexGroup justifyContent="spaceBetween">
+      <EuiFlexItem grow={false}>
+        <EuiButtonEmpty
+          size="xs"
+          iconType="arrowLeft"
+          iconSide="left"
+          onClick={previousPreviewPanel}
+        >
+          {BACK_BUTTON}
+        </EuiButtonEmpty>
+      </EuiFlexItem>
+      {closeButton}
+    </EuiFlexGroup>
+  ) : (
+    <EuiFlexGroup justifyContent="flexEnd">{closeButton}</EuiFlexGroup>
+  );
 
   return (
     <>
@@ -49,6 +99,7 @@ export const PreviewSection: React.FC<PreviewSectionProps> = ({
             height: 100%;
           `}
         >
+          {header}
           {component}
         </EuiPanel>
       </div>

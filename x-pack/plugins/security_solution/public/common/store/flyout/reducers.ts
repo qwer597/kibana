@@ -131,6 +131,19 @@ export const flyoutsSlice = createSlice({
         allIds: state.allIds.filter((id: string) => state.previewIds.includes(id)),
       };
     },
+    previousSecurityFlyoutPreviewPanel: (state) => {
+      const lastPreviewPanelId = state.previewIds[state.previewIds.length - 1];
+      const byId = { ...state.byId };
+      delete byId[lastPreviewPanelId];
+
+      return {
+        byId,
+        leftId: state.leftId,
+        rightId: state.rightId,
+        previewIds: state.previewIds.slice(-1),
+        allIds: state.allIds.filter((id: string) => id !== lastPreviewPanelId),
+      };
+    },
     closeSecurityFlyoutPanels: () => ({
       byId: {},
       leftId: '',
@@ -149,6 +162,7 @@ export const {
   closeSecurityFlyoutRightPanel,
   closeSecurityFlyoutLeftPanel,
   closeSecurityFlyoutPreviewPanel,
+  previousSecurityFlyoutPreviewPanel,
   closeSecurityFlyoutPanels,
 } = flyoutsSlice.actions;
 
