@@ -18,6 +18,10 @@ export interface SecurityFlyoutProps {
    */
   className?: string;
   /**
+   * We'll have multiple flyout throughout Kibana
+   */
+  scope: string;
+  /**
    * Allows developers to run code on close action
    */
   handleOnClose?: () => void;
@@ -31,22 +35,24 @@ export interface SecurityFlyoutProps {
  * Each section can display a panel, with a certain width.
  * The panel's information are saved in the url to display the flyout identically after refresh.
  */
-export const SecurityFlyout = React.memo(({ handleOnClose, className }: SecurityFlyoutProps) => {
-  const dispatch = useDispatch();
-  const flyouts = useSelector(selectFlyoutLayout);
+export const SecurityFlyout = React.memo(
+  ({ className, scope, handleOnClose }: SecurityFlyoutProps) => {
+    const dispatch = useDispatch();
+    const flyouts = useSelector(selectFlyoutLayout(scope));
 
-  const close = useCallback(() => {
-    if (handleOnClose) handleOnClose();
-    dispatch(closeSecurityFlyoutPanels());
-  }, [dispatch, handleOnClose]);
+    const close = useCallback(() => {
+      if (handleOnClose) handleOnClose();
+      dispatch(closeSecurityFlyoutPanels({ scope }));
+    }, [dispatch, handleOnClose, scope]);
 
-  if (!flyouts) return null;
+    if (!flyouts) return null;
 
-  return (
-    <ExpandableFlyoutProvider close={close} layout={flyouts}>
-      <ExpandableFlyout className={className} panels={expandableFlyoutPanels} onClose={close} />
-    </ExpandableFlyoutProvider>
-  );
-});
+    return (
+      <ExpandableFlyoutProvider close={close} layout={flyouts} scope={scope}>
+        <ExpandableFlyout className={className} panels={expandableFlyoutPanels} onClose={close} />
+      </ExpandableFlyoutProvider>
+    );
+  }
+);
 
 SecurityFlyout.displayName = 'SecurityFlyout';

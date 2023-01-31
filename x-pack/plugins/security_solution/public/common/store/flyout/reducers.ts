@@ -13,144 +13,301 @@ import type { SecurityFlyoutLayout, SecurityFlyoutPanel } from './model';
 
 export interface SecurityFlyoutState {
   byId: { [panelId: string]: SecurityFlyoutPanel };
-  leftId: string;
-  rightId: string;
+  leftIds: string[];
+  rightIds: string[];
   previewIds: string[];
+  idsByScope: { [scopeId: string]: string[] };
   allIds: string[];
 }
 
 export const initialFlyoutState: SecurityFlyoutState = {
   byId: {},
-  leftId: '',
-  rightId: '',
+  leftIds: [],
+  rightIds: [],
   previewIds: [],
+  idsByScope: {},
   allIds: [],
 };
 
-export const flyoutsSlice = createSlice({
-  name: 'flyouts',
+export const flyoutSlice = createSlice({
+  name: 'flyout',
   initialState: initialFlyoutState,
   reducers: {
     openSecurityFlyoutPanels: (
       state,
-      {
-        payload: { left, preview, right },
-      }: PayloadAction<{
+      action: PayloadAction<{
+        scope: string;
         right?: SecurityFlyoutPanel;
         left?: SecurityFlyoutPanel;
         preview?: SecurityFlyoutPanel;
       }>
     ) => {
-      const byId: { [panelId: string]: SecurityFlyoutPanel } = {};
-      const allIds: string[] = [];
+      const { scope, left, right, preview } = action.payload;
+
+      const byId: { [panelId: string]: SecurityFlyoutPanel } = { ...state.byId };
+      const leftIds: string[] = [...state.leftIds];
+      const rightIds: string[] = [...state.rightIds];
+      const previewIds: string[] = [...state.previewIds];
+      const idsByScope: { [scopeId: string]: string[] } = { ...state.idsByScope };
+      const allIds: string[] = [...state.allIds];
+
+      if (!idsByScope[scope]) {
+        idsByScope[scope] = [];
+      }
 
       if (right) {
-        byId[right.key] = right;
-        allIds.push(right.key);
+        const { key } = right;
+        byId[key] = right;
+        rightIds.push(key);
+        idsByScope[scope].push(key);
+        allIds.push(key);
       }
       if (left) {
-        byId[left.key] = left;
-        allIds.push(left.key);
+        const { key } = left;
+        byId[key] = left;
+        leftIds.push(key);
+        idsByScope[scope].push(key);
+        allIds.push(key);
       }
       if (preview) {
-        byId[preview.key] = preview;
-        allIds.push(preview.key);
+        const { key } = preview;
+        byId[key] = preview;
+        previewIds.push(key);
+        idsByScope[scope].push(key);
+        allIds.push(key);
       }
 
       return {
         byId,
-        leftId: left?.key || '',
-        rightId: right?.key || '',
-        previewIds: preview ? [preview.key] : [],
+        leftIds,
+        rightIds,
+        previewIds,
+        idsByScope,
         allIds,
       };
     },
-    openSecurityFlyoutRightPanel: (state, action: PayloadAction<SecurityFlyoutPanel>) => ({
-      byId: {
-        ...state.byId,
-        [action.payload.key]: action.payload,
-      },
-      leftId: state.leftId,
-      rightId: action.payload.key,
-      previewIds: state.previewIds,
-      allIds: [...state.allIds, action.payload.key],
-    }),
-    openSecurityFlyoutLeftPanel: (state, action: PayloadAction<SecurityFlyoutPanel>) => ({
-      byId: {
-        ...state.byId,
-        [action.payload.key]: action.payload,
-      },
-      leftId: action.payload.key,
-      rightId: state.rightId,
-      previewIds: state.previewIds,
-      allIds: [...state.allIds, action.payload.key],
-    }),
-    openSecurityFlyoutPreviewPanel: (state, action: PayloadAction<SecurityFlyoutPanel>) => ({
-      byId: {
-        ...state.byId,
-        [action.payload.key]: action.payload,
-      },
-      leftId: state.leftId,
-      rightId: state.rightId,
-      previewIds: [...state.previewIds, action.payload.key],
-      allIds: [...state.allIds, action.payload.key],
-    }),
-    closeSecurityFlyoutRightPanel: (state) => {
-      const byId = { ...state.byId };
-      delete byId[state.rightId];
+    openSecurityFlyoutRightPanel: (
+      state,
+      action: PayloadAction<{ scope: string; panel: SecurityFlyoutPanel }>
+    ) => {
+      const { scope, panel } = action.payload;
+
+      const previousId: string = state.idsByScope[scope].find((id: string) =>
+        state.rightIds.includes(id)
+      ) as string;
+
+      let scopedIds: string[];
+      if (!state.idsByScope[scope]) {
+        scopedIds = [panel.key];
+      } else {
+        scopedIds = state.idsByScope[scope].filter((id: string) => id === previousId);
+        scopedIds.push(panel.key);
+      }
 
       return {
-        byId,
-        leftId: state.leftId,
-        rightId: '',
+        byId: { ...state.byId, [panel.key]: panel },
+        leftIds: state.leftIds,
+        rightIds: [...state.rightIds.filter((id: string) => id === previousId), panel.key],
         previewIds: state.previewIds,
-        allIds: state.allIds.filter((id: string) => id !== state.rightId),
+        idsByScope: { ...state.idsByScope, [scope]: scopedIds },
+        allIds: [...state.allIds.filter((id: string) => id === previousId), panel.key],
       };
     },
-    closeSecurityFlyoutLeftPanel: (state) => {
-      const byId = { ...state.byId };
-      delete byId[state.leftId];
+    openSecurityFlyoutLeftPanel: (
+      state,
+      action: PayloadAction<{ scope: string; panel: SecurityFlyoutPanel }>
+    ) => {
+      const { scope, panel } = action.payload;
+
+      const previousId: string = state.idsByScope[scope].find((id: string) =>
+        state.leftIds.includes(id)
+      ) as string;
+
+      let scopedIds: string[];
+      if (!state.idsByScope[scope]) {
+        scopedIds = [panel.key];
+      } else {
+        scopedIds = state.idsByScope[scope].filter((id: string) => id === previousId);
+        scopedIds.push(panel.key);
+      }
 
       return {
-        byId,
-        leftId: '',
-        rightId: state.rightId,
+        byId: { ...state.byId, [panel.key]: panel },
+        leftIds: [...state.leftIds.filter((id: string) => id === previousId), panel.key],
+        rightIds: state.rightIds,
         previewIds: state.previewIds,
-        allIds: state.allIds.filter((id: string) => id !== state.leftId),
+        idsByScope: { ...state.idsByScope, [scope]: scopedIds },
+        allIds: [...state.allIds.filter((id: string) => id === previousId), panel.key],
       };
     },
-    closeSecurityFlyoutPreviewPanel: (state) => {
+    openSecurityFlyoutPreviewPanel: (
+      state,
+      action: PayloadAction<{ scope: string; panel: SecurityFlyoutPanel }>
+    ) => {
+      const { scope, panel } = action.payload;
+
+      const previousId: string = state.idsByScope[scope].find((id: string) =>
+        state.rightIds.includes(id)
+      ) as string;
+
+      let scopedIds: string[];
+      if (!state.idsByScope[scope]) {
+        scopedIds = [panel.key];
+      } else {
+        scopedIds = state.idsByScope[scope].filter((id: string) => id === previousId);
+        scopedIds.push(panel.key);
+      }
+
+      return {
+        byId: { ...state.byId, [panel.key]: panel },
+        leftIds: state.leftIds,
+        rightIds: state.rightIds,
+        previewIds: [...state.previewIds.filter((id: string) => id === previousId), panel.key],
+        idsByScope: { ...state.idsByScope, [scope]: scopedIds },
+        allIds: [...state.allIds.filter((id: string) => id === previousId), panel.key],
+      };
+    },
+    closeSecurityFlyoutRightPanel: (state, action: PayloadAction<{ scope: string }>) => {
+      const { scope } = action.payload;
+
+      if (!state.idsByScope[scope]) {
+        return state;
+      }
+
+      const scopedIds: string[] = state.idsByScope[scope];
+      const panelId: string = scopedIds.find((id: string) => state.rightIds.includes(id)) as string;
+
       const byId = { ...state.byId };
-      state.previewIds.forEach((id: string) => delete byId[id]);
+      delete byId[panelId];
 
       return {
         byId,
-        leftId: state.leftId,
-        rightId: state.rightId,
-        previewIds: [],
-        allIds: state.allIds.filter((id: string) => state.previewIds.includes(id)),
+        leftIds: state.leftIds,
+        rightIds: state.rightIds.filter((id: string) => id === panelId),
+        previewIds: state.previewIds,
+        idsByScope: {
+          ...state.idsByScope,
+          [scope]: state.idsByScope[scope].filter((id: string) => id === panelId),
+        },
+        allIds: state.allIds.filter((id: string) => id !== panelId),
       };
     },
-    previousSecurityFlyoutPreviewPanel: (state) => {
-      const lastPreviewPanelId = state.previewIds[state.previewIds.length - 1];
+    closeSecurityFlyoutLeftPanel: (state, action: PayloadAction<{ scope: string }>) => {
+      const { scope } = action.payload;
+
+      if (!state.idsByScope[scope]) {
+        return state;
+      }
+
+      const scopedIds: string[] = state.idsByScope[scope];
+      const panelId: string = scopedIds.find((id: string) => state.leftIds.includes(id)) as string;
+
       const byId = { ...state.byId };
-      delete byId[lastPreviewPanelId];
+      delete byId[panelId];
 
       return {
         byId,
-        leftId: state.leftId,
-        rightId: state.rightId,
-        previewIds: state.previewIds.slice(-1),
-        allIds: state.allIds.filter((id: string) => id !== lastPreviewPanelId),
+        leftIds: state.leftIds.filter((id: string) => id === panelId),
+        rightIds: state.rightIds,
+        previewIds: state.previewIds,
+        idsByScope: {
+          ...state.idsByScope,
+          [scope]: state.idsByScope[scope].filter((id: string) => id === panelId),
+        },
+        allIds: state.allIds.filter((id: string) => id !== panelId),
       };
     },
-    closeSecurityFlyoutPanels: () => ({
-      byId: {},
-      leftId: '',
-      rightId: '',
-      previewIds: [],
-      allIds: [],
-    }),
+    closeSecurityFlyoutPreviewPanel: (state, action: PayloadAction<{ scope: string }>) => {
+      const { scope } = action.payload;
+
+      if (!state.idsByScope[scope]) {
+        return state;
+      }
+
+      const scopedIds: string[] = state.idsByScope[scope];
+      const panelIds: string[] = scopedIds.filter((id: string) => state.previewIds.includes(id));
+
+      const byId = { ...state.byId };
+      panelIds.forEach((id: string) => delete byId[id]);
+
+      return {
+        byId,
+        leftIds: state.leftIds,
+        rightIds: state.rightIds,
+        previewIds: state.previewIds.filter((id: string) => panelIds.includes(id)),
+        idsByScope: {
+          ...state.idsByScope,
+          [scope]: state.idsByScope[scope].filter((id: string) => panelIds.includes(id)),
+        },
+        allIds: state.allIds.filter((id: string) => panelIds.includes(id)),
+      };
+    },
+    previousSecurityFlyoutPreviewPanel: (state, action: PayloadAction<{ scope: string }>) => {
+      const { scope } = action.payload;
+
+      if (!state.idsByScope[scope]) {
+        return state;
+      }
+
+      const scopedIds: string[] = [...state.idsByScope[scope]];
+      const scopedPreviewIds: string[] = scopedIds.filter((id: string) =>
+        state.previewIds.includes(id)
+      );
+      const mostRecentId: string = scopedPreviewIds[scopedPreviewIds.length - 1];
+
+      const byId = { ...state.byId };
+      delete byId[mostRecentId];
+
+      const previewIds = [...state.previewIds];
+      let index = previewIds.indexOf(mostRecentId);
+      if (index !== -1) {
+        previewIds.splice(index, 1);
+      }
+
+      const allIds = [...state.allIds];
+      index = allIds.indexOf(mostRecentId);
+      if (index !== -1) {
+        allIds.splice(index, 1);
+      }
+
+      index = scopedIds.indexOf(mostRecentId);
+      if (index !== -1) {
+        scopedIds.splice(index, 1);
+      }
+
+      return {
+        byId,
+        leftIds: state.leftIds,
+        rightIds: state.rightIds,
+        previewIds,
+        idsByScope: { ...state.idsByScope, [scope]: scopedIds },
+        allIds,
+      };
+    },
+    closeSecurityFlyoutPanels: (state, action: PayloadAction<{ scope: string }>) => {
+      const { scope } = action.payload;
+
+      if (!state.idsByScope[scope]) {
+        return state;
+      }
+
+      const scopedIds: string[] = state.idsByScope[scope];
+
+      const byId = { ...state.byId };
+      scopedIds.forEach((id: string) => delete byId[id]);
+
+      const idsByScope = { ...state.idsByScope };
+      delete idsByScope[scope];
+
+      return {
+        byId,
+        leftIds: state.leftIds.filter((id: string) => scopedIds.includes(id)),
+        rightIds: state.rightIds.filter((id: string) => scopedIds.includes(id)),
+        previewIds: state.previewIds.filter((id: string) => scopedIds.includes(id)),
+        idsByScope,
+        allIds: state.allIds.filter((id: string) => scopedIds.includes(id)),
+      };
+    },
   },
 });
 
@@ -164,17 +321,36 @@ export const {
   closeSecurityFlyoutPreviewPanel,
   previousSecurityFlyoutPreviewPanel,
   closeSecurityFlyoutPanels,
-} = flyoutsSlice.actions;
+} = flyoutSlice.actions;
 
-const selectFlyouts = (state: State): SecurityFlyoutState => state.flyouts;
+const selectFlyout = (state: State): SecurityFlyoutState => state.flyouts;
 
-export const selectFlyoutLayout = createSelector(
-  selectFlyouts,
-  (flyouts: SecurityFlyoutState): SecurityFlyoutLayout => ({
-    left: flyouts.byId[flyouts.leftId],
-    right: flyouts.byId[flyouts.rightId],
-    preview: flyouts.previewIds.map((id: string) => flyouts.byId[id]),
-  })
-);
+export const selectFlyoutLayout = (scope: string) =>
+  createSelector(selectFlyout, (flyout: SecurityFlyoutState): SecurityFlyoutLayout => {
+    const scopedPanelIds: string[] = flyout.idsByScope[scope];
+    if (!scopedPanelIds) {
+      return {
+        right: {},
+        left: {},
+        preview: [],
+      };
+    }
 
-export const flyoutsReducer = flyoutsSlice.reducer;
+    const leftPanelId: string = scopedPanelIds.find((id: string) =>
+      flyout.leftIds.includes(id)
+    ) as string;
+    const rightPanelId: string = scopedPanelIds.find((id: string) =>
+      flyout.rightIds.includes(id)
+    ) as string;
+    const previewPanelIds: string[] = scopedPanelIds.filter((id: string) =>
+      flyout.previewIds.includes(id)
+    );
+
+    return {
+      left: flyout.byId[leftPanelId],
+      right: flyout.byId[rightPanelId],
+      preview: previewPanelIds.map((id: string) => flyout.byId[id]),
+    };
+  });
+
+export const flyoutReducer = flyoutSlice.reducer;

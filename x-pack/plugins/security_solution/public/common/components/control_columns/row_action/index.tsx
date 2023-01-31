@@ -94,8 +94,23 @@ const RowActionComponent = ({
     if (isSecurityFlyoutEnabled) {
       dispatch(
         openSecurityFlyoutPanels({
+          scope: 'global',
           right: {
             key: 'event',
+            params: {
+              id: eventId,
+              indexName,
+            },
+          },
+          left: {
+            key: 'visualize',
+            params: {
+              id: eventId,
+              indexName,
+            },
+          },
+          preview: {
+            key: 'alert',
             params: {
               id: eventId,
               indexName,

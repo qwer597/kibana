@@ -108,7 +108,7 @@ export const SecuritySolutionTemplateWrapper: React.FC<Omit<KibanaPageTemplatePr
             </EuiThemeProvider>
           </KibanaPageTemplate.BottomBar>
         )}
-        <SecurityFlyout />
+        <SecurityFlyout scope={'global'} />
       </StyledKibanaPageTemplate>
     );
   });

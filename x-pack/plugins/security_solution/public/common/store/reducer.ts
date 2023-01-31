@@ -8,7 +8,7 @@
 import type { AnyAction, Reducer } from 'redux';
 import { combineReducers } from 'redux';
 
-import { flyoutsReducer, initialFlyoutState } from './flyout/reducers';
+import { flyoutReducer, initialFlyoutState } from './flyout/reducers';
 import { appReducer, initialAppState } from './app';
 import { dragAndDropReducer, initialDragAndDropState } from './drag_and_drop';
 import { createInitialInputsState, inputsReducer } from './inputs';
@@ -124,7 +124,7 @@ export const createReducer: (
   combineReducers({
     app: appReducer,
     dragAndDrop: dragAndDropReducer,
-    flyouts: flyoutsReducer,
+    flyouts: flyoutReducer,
     inputs: inputsReducer,
     sourcerer: sourcererReducer,
     globalUrlParam: globalUrlParamReducer,

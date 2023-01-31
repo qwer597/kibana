@@ -32,15 +32,19 @@ export interface ExpandableFlyoutContext {
   /**
    *
    */
-  openRightPanel: (configUpdate: SecurityFlyoutPanel) => void;
+  scope: string;
   /**
    *
    */
-  openLeftPanel: (configUpdate: SecurityFlyoutPanel) => void;
+  openRightPanel: (panel: SecurityFlyoutPanel) => void;
   /**
    *
    */
-  openPreviewPanel: (configUpdate: SecurityFlyoutPanel) => void;
+  openLeftPanel: (panel: SecurityFlyoutPanel) => void;
+  /**
+   *
+   */
+  openPreviewPanel: (panel: SecurityFlyoutPanel) => void;
   /**
    *
    */
@@ -60,12 +64,12 @@ export interface ExpandableFlyoutContext {
 }
 
 export const ExpandableFlyoutContext = createContext<ExpandableFlyoutContext>({
-  close: noop,
   panels: {
-    left: undefined,
-    right: undefined,
-    preview: undefined,
+    left: {},
+    right: {},
+    preview: [],
   },
+  scope: '',
   openRightPanel: noop,
   openLeftPanel: noop,
   openPreviewPanel: noop,
@@ -73,13 +77,10 @@ export const ExpandableFlyoutContext = createContext<ExpandableFlyoutContext>({
   closeLeftPanel: noop,
   closePreviewPanel: noop,
   closePanels: noop,
+  close: noop,
 });
 
 export interface ExpandableFlyoutProviderProps {
-  /**
-   *
-   */
-  close: () => void;
   /**
    *
    */
@@ -87,49 +88,67 @@ export interface ExpandableFlyoutProviderProps {
   /**
    *
    */
+  scope: string;
+  /**
+   *
+   */
   children: React.ReactNode;
+  /**
+   *
+   */
+  close: () => void;
 }
 
 export const ExpandableFlyoutProvider = ({
-  close,
   layout,
+  scope,
   children,
+  close,
 }: ExpandableFlyoutProviderProps) => {
   const [panels, setPanels] = useState(layout);
   const dispatch = useDispatch();
 
   const openRightPanel = useCallback(
-    (p: SecurityFlyoutPanel) => dispatch(openSecurityFlyoutRightPanel({ ...p })),
-    [dispatch]
+    (p: SecurityFlyoutPanel) => dispatch(openSecurityFlyoutRightPanel({ scope, panel: p })),
+    [dispatch, scope]
   );
 
   const openLeftPanel = useCallback(
-    (p: SecurityFlyoutPanel) => dispatch(openSecurityFlyoutLeftPanel({ ...p })),
-    [dispatch]
+    (p: SecurityFlyoutPanel) => dispatch(openSecurityFlyoutLeftPanel({ scope, panel: p })),
+    [dispatch, scope]
   );
 
   const openPreviewPanel = useCallback(
-    (p: SecurityFlyoutPanel) => dispatch(openSecurityFlyoutPreviewPanel({ ...p })),
-    [dispatch]
+    (p: SecurityFlyoutPanel) => dispatch(openSecurityFlyoutPreviewPanel({ scope, panel: p })),
+    [dispatch, scope]
   );
 
-  const closeRightPanel = useCallback(() => dispatch(closeSecurityFlyoutRightPanel()), [dispatch]);
+  const closeRightPanel = useCallback(
+    () => dispatch(closeSecurityFlyoutRightPanel({ scope })),
+    [dispatch, scope]
+  );
 
-  const closeLeftPanel = useCallback(() => dispatch(closeSecurityFlyoutLeftPanel()), [dispatch]);
+  const closeLeftPanel = useCallback(
+    () => dispatch(closeSecurityFlyoutLeftPanel({ scope })),
+    [dispatch, scope]
+  );
 
   const closePreviewPanel = useCallback(
-    () => dispatch(closeSecurityFlyoutPreviewPanel()),
-    [dispatch]
+    () => dispatch(closeSecurityFlyoutPreviewPanel({ scope })),
+    [dispatch, scope]
   );
 
-  const closePanels = useCallback(() => dispatch(closeSecurityFlyoutPanels()), [dispatch]);
+  const closePanels = useCallback(
+    () => dispatch(closeSecurityFlyoutPanels({ scope })),
+    [dispatch, scope]
+  );
 
   useEffect(() => setPanels(layout), [layout]);
 
   const contextValue = useMemo(
     () => ({
-      close,
       panels,
+      scope,
       openRightPanel,
       openLeftPanel,
       openPreviewPanel,
@@ -137,10 +156,11 @@ export const ExpandableFlyoutProvider = ({
       closeLeftPanel,
       closePreviewPanel,
       closePanels,
+      close,
     }),
     [
-      close,
       panels,
+      scope,
       openRightPanel,
       openLeftPanel,
       openPreviewPanel,
@@ -148,6 +168,7 @@ export const ExpandableFlyoutProvider = ({
       closeLeftPanel,
       closePreviewPanel,
       closePanels,
+      close,
     ]
   );
 
