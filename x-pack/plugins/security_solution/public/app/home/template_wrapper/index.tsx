@@ -12,6 +12,8 @@ import { IS_DRAGGING_CLASS_NAME } from '@kbn/securitysolution-t-grid';
 import { KibanaPageTemplate } from '@kbn/shared-ux-page-kibana-template';
 import type { KibanaPageTemplateProps } from '@kbn/shared-ux-page-kibana-template';
 import { ExpandableFlyout, ExpandableFlyoutProvider } from '@kbn/expandable-flyout';
+// eslint-disable-next-line @kbn/imports/no_boundary_crossing
+import { expandableFlyoutPanels } from '../../../flyout/test/panels';
 import { useSecuritySolutionNavigation } from '../../../common/components/navigation/use_security_solution_navigation';
 import { TimelineId } from '../../../../common/types/timeline';
 import { getTimelineShowStatusByIdSelector } from '../../../timelines/components/flyout/selectors';
@@ -107,7 +109,7 @@ export const SecuritySolutionTemplateWrapper: React.FC<Omit<KibanaPageTemplatePr
               </EuiThemeProvider>
             </KibanaPageTemplate.BottomBar>
           )}
-          <ExpandableFlyout registeredPanels={[]} onClose={() => {}} />
+          <ExpandableFlyout registeredPanels={expandableFlyoutPanels} onClose={() => {}} />
         </StyledKibanaPageTemplate>
       </ExpandableFlyoutProvider>
     );
