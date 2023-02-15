@@ -157,3 +157,5 @@ export const ALERTS_HISTOGRAM_LEGEND =
   '[data-test-subj="alerts-histogram-panel"] [data-test-subj="withHoverActionsButton"]';
 
 export const SELECT_HISTOGRAM = '[data-test-subj="chart-select-trend"]';
+
+export const TREND_CHART_LEGEND = '[data-test-subj="draggable-legend"]';
