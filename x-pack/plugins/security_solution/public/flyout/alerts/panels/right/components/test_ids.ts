@@ -6,3 +6,6 @@
  */
 
 export const FLYOUT_HEADER_TITLE = 'securitySolutionAlertDetailsFlyoutHeaderTitle';
+export const EXPAND_DETAILS_BUTTON = 'securitySolutionAlertDetailsFlyoutHeaderExpandDetailButton';
+export const COLLAPSE_DETAILS_BUTTON =
+  'securitySolutionAlertDetailsFlyoutHeaderCollapseDetailButton';

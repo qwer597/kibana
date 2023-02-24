@@ -6,6 +6,8 @@
  */
 
 import {
+  ALERT_DETAILS_FLYOUT_COLLAPSE_DETAILS_BUTTON,
+  ALERT_DETAILS_FLYOUT_EXPAND_DETAILS_BUTTON,
   ALERT_DETAILS_FLYOUT_HEADER_TITLE,
   ALERT_DETAILS_FLYOUT_JSON_TAB,
   ALERT_DETAILS_FLYOUT_JSON_TAB_CONTENT,
@@ -15,6 +17,8 @@ import {
   ALERT_DETAILS_FLYOUT_TABLE_TAB_CONTENT,
 } from '../../../screens/alert_details_expandable_flyout';
 import {
+  collapseAlertDetailsExpandableFlyoutLeftSection,
+  expandAlertDetailsExpandableFlyoutLeftSection,
   expandFirstAlertExpandableFlyout,
   openJsonTab,
   openOverviewTab,
@@ -43,6 +47,18 @@ describe.skip('Alert details expandable flyout right panel', { testIsolation: fa
     cy.get(ALERT_DETAILS_FLYOUT_HEADER_TITLE)
       .should('be.visible')
       .and('have.text', 'Alert details');
+  });
+
+  it('should toggle expand detail button in the header', () => {
+    expandAlertDetailsExpandableFlyoutLeftSection();
+    cy.get(ALERT_DETAILS_FLYOUT_COLLAPSE_DETAILS_BUTTON)
+      .should('be.visible')
+      .and('have.text', 'Collapse alert details');
+
+    collapseAlertDetailsExpandableFlyoutLeftSection();
+    cy.get(ALERT_DETAILS_FLYOUT_EXPAND_DETAILS_BUTTON)
+      .should('be.visible')
+      .and('have.text', 'Expand alert details');
   });
 
   it('should display 3 tabs in the right section', () => {

@@ -10,6 +10,9 @@ import type { ExpandableFlyoutProps } from '@kbn/expandable-flyout';
 import type { RightPanelProps } from './panels/right';
 import { RightPanel, RightPanelKey } from './panels/right';
 import { RightPanelProvider } from './panels/right/context';
+import type { LeftPanelProps } from './panels/left';
+import { LeftPanel, LeftPanelKey } from './panels/left';
+import { LeftPanelProvider } from './panels/left/context';
 
 /**
  * List of all panels that will be used within the alert details expandable flyout.
@@ -23,6 +26,15 @@ export const expandableFlyoutAlertsPanels: ExpandableFlyoutProps['registeredPane
       <RightPanelProvider {...(props as RightPanelProps).params}>
         <RightPanel path={props.path as RightPanelProps['path']} />
       </RightPanelProvider>
+    ),
+  },
+  {
+    key: LeftPanelKey,
+    width: 1000,
+    component: (props) => (
+      <LeftPanelProvider {...(props as LeftPanelProps).params}>
+        <LeftPanel path={props.path as LeftPanelProps['path']} />
+      </LeftPanelProvider>
     ),
   },
 ];
