@@ -9,6 +9,7 @@ import { EuiFlyoutBody } from '@elastic/eui';
 import { css } from '@emotion/react';
 import type { VFC } from 'react';
 import React, { useMemo } from 'react';
+import { FLYOUT_BODY_TEST_ID } from './test_ids';
 import type { RightPanelPaths } from '.';
 import { tabs } from './tabs';
 
@@ -33,6 +34,7 @@ export const PanelContent: VFC<PanelContentProps> = ({ selectedTabId }) => {
       css={css`
         height: calc(100vh - 262px);
       `}
+      data-test-subj={FLYOUT_BODY_TEST_ID}
     >
       {selectedTabContent}
     </EuiFlyoutBody>

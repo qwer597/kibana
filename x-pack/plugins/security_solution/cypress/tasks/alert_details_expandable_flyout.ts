@@ -6,6 +6,7 @@
  */
 
 import {
+  ALERT_DETAILS_FLYOUT_BODY,
   ALERT_DETAILS_FLYOUT_COLLAPSE_DETAILS_BUTTON,
   ALERT_DETAILS_FLYOUT_EXPAND_DETAILS_BUTTON,
   ALERT_DETAILS_FLYOUT_HISTORY_TAB,
@@ -14,6 +15,12 @@ import {
   ALERT_DETAILS_FLYOUT_JSON_TAB,
   ALERT_DETAILS_FLYOUT_OVERVIEW_TAB,
   ALERT_DETAILS_FLYOUT_TABLE_TAB,
+  ALERT_DETAILS_FLYOUT_TABLE_TAB_CLEAR_FILTER,
+  ALERT_DETAILS_FLYOUT_TABLE_TAB_FILTER,
+  ALERT_DETAILS_FLYOUT_TABLE_TAB_ROW_CELL_ADD_TO_TIMELINE,
+  ALERT_DETAILS_FLYOUT_TABLE_TAB_ROW_CELL_FILTER_IN,
+  ALERT_DETAILS_FLYOUT_TABLE_TAB_ROW_CELL_FILTER_OUT,
+  ALERT_DETAILS_FLYOUT_TABLE_TAB_ROW_CELL_MORE_ACTIONS,
   ALERT_DETAILS_FLYOUT_VISUALIZE_TAB,
   ALERT_DETAILS_FLYOUT_VISUALIZE_TAB_GRAPH_ANALYSER_BUTTON,
   ALERT_DETAILS_FLYOUT_VISUALIZE_TAB_SESSION_VIEW_BUTTON,
@@ -85,3 +92,62 @@ export const openInvestigationsTab = () => cy.get(ALERT_DETAILS_FLYOUT_INVESTIGA
  * Open the History tab in the alert details expandable flyout left section
  */
 export const openHistoryTab = () => cy.get(ALERT_DETAILS_FLYOUT_HISTORY_TAB).click();
+
+/**
+ * Filter table under the Table tab in the alert details expandable flyout right section
+ */
+export const filterTableTabTable = (filterValue: string) =>
+  cy.get(ALERT_DETAILS_FLYOUT_BODY).within(() => {
+    cy.get(ALERT_DETAILS_FLYOUT_TABLE_TAB_FILTER).type(filterValue);
+  });
+
+/**
+ * Clear table filter under the Table tab in the alert details expandable flyout right section
+ */
+export const clearFilterTableTabTable = () =>
+  cy.get(ALERT_DETAILS_FLYOUT_BODY).within(() => {
+    cy.get(ALERT_DETAILS_FLYOUT_TABLE_TAB_CLEAR_FILTER).click();
+  });
+
+/**
+ * Filter In action in the first table row under the Table tab in the alert details expandable flyout right section
+ */
+export const filterInTableTabTable = () =>
+  cy.get(ALERT_DETAILS_FLYOUT_BODY).within(() => {
+    cy.get(ALERT_DETAILS_FLYOUT_TABLE_TAB_ROW_CELL_FILTER_IN).first().click();
+  });
+
+/**
+ * Filter Out action in the first table row under the Table tab in the alert details expandable flyout right section
+ */
+export const filterOutTableTabTable = () =>
+  cy.get(ALERT_DETAILS_FLYOUT_BODY).within(() => {
+    cy.get(ALERT_DETAILS_FLYOUT_TABLE_TAB_ROW_CELL_FILTER_OUT).first().click();
+  });
+
+/**
+ * Add to timeline action in the first table row under the Table tab in the alert details expandable flyout right section
+ */
+export const addToTimelineTableTabTable = () => {
+  cy.get(ALERT_DETAILS_FLYOUT_BODY).within(() => {
+    cy.get(ALERT_DETAILS_FLYOUT_TABLE_TAB_ROW_CELL_MORE_ACTIONS).first().click();
+  });
+  cy.get(ALERT_DETAILS_FLYOUT_TABLE_TAB_ROW_CELL_ADD_TO_TIMELINE).click();
+};
+
+/**
+ * Show Copy to clipboard button in the first table row under the Table tab in the alert details expandable flyout right section
+ */
+export const copyToClipboardTableTabTable = () => {
+  cy.get(ALERT_DETAILS_FLYOUT_BODY).within(() => {
+    cy.get(ALERT_DETAILS_FLYOUT_TABLE_TAB_ROW_CELL_MORE_ACTIONS).first().click();
+  });
+};
+
+/**
+ * Clear filters in the alert page KQL bar
+ */
+export const clearFilters = () =>
+  cy.get(ALERT_DETAILS_FLYOUT_BODY).within(() => {
+    cy.get(ALERT_DETAILS_FLYOUT_TABLE_TAB_ROW_CELL_FILTER_OUT).first().click();
+  });

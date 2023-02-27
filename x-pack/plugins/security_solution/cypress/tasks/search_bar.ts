@@ -6,6 +6,7 @@
  */
 
 import type { SearchBarFilter } from '../objects/filter';
+import { FILTER_BADGE, FILTER_BADGE_DELETE } from '../screens/alerts';
 
 import {
   GLOBAL_SEARCH_BAR_ADD_FILTER,
@@ -32,6 +33,13 @@ export const openKqlQueryBar = () => {
 export const fillKqlQueryBar = (query: string) => {
   cy.get(GLOBAL_KQL_INPUT).should('be.visible');
   cy.get(GLOBAL_KQL_INPUT).type(query);
+};
+
+export const removeKqlFilter = () => {
+  cy.get(FILTER_BADGE).then((el) => {
+    el.click();
+    cy.get(FILTER_BADGE_DELETE).click();
+  });
 };
 
 export const fillAddFilterForm = ({ key, value, operator }: SearchBarFilter) => {

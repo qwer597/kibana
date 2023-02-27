@@ -5,7 +5,15 @@
  * 2.0.
  */
 
+import type { BrowserFields, TimelineEventsDetailsItem } from '@kbn/timelines-plugin/common';
 import React, { createContext, useContext } from 'react';
+import { useTimelineEventsDetails } from '../../../../timelines/containers/details';
+import { getAlertIndexAlias } from '../../../../timelines/components/side_panel/event_details/helpers';
+import { useSpaceId } from '../../../../common/hooks/use_space_id';
+import { useRouteSpy } from '../../../../common/utils/route/use_route_spy';
+import { SecurityPageName } from '../../../../../common/constants';
+import { SourcererScopeName } from '../../../../common/store/sourcerer/model';
+import { useSourcererDataView } from '../../../../common/containers/sourcerer';
 import type { RightPanelProps } from '.';
 
 export interface RightPanelContext {
@@ -17,6 +25,14 @@ export interface RightPanelContext {
    * Name of the index used in the alerts page
    */
   indexName: string;
+  /**
+   *
+   */
+  browserFields: BrowserFields | null;
+  /**
+   *
+   */
+  dataFormattedForFieldBrowser: TimelineEventsDetailsItem[] | null;
 }
 
 export const RightPanelContext = createContext<RightPanelContext | undefined>(undefined);
@@ -29,12 +45,33 @@ export type RightPanelProviderProps = {
 } & Partial<RightPanelProps['params']>;
 
 export const RightPanelProvider = ({ id, indexName, children }: RightPanelProviderProps) => {
+  const currentSpaceId = useSpaceId();
+  const eventIndex = indexName ? getAlertIndexAlias(indexName, currentSpaceId) ?? indexName : '';
+  const [{ pageName }] = useRouteSpy();
+  const sourcererScope =
+    pageName === SecurityPageName.detections
+      ? SourcererScopeName.detections
+      : SourcererScopeName.default;
+  const sourcererDataView = useSourcererDataView(sourcererScope);
+  const [loading, dataFormattedForFieldBrowser] = useTimelineEventsDetails({
+    indexName: eventIndex,
+    eventId: id ?? '',
+    runtimeMappings: sourcererDataView.runtimeMappings,
+    skip: !id,
+  });
+
   const contextValue = {
     eventId: id as string,
     indexName: indexName as string,
+    browserFields: sourcererDataView.browserFields as BrowserFields,
+    dataFormattedForFieldBrowser: dataFormattedForFieldBrowser as TimelineEventsDetailsItem[],
   };
 
-  return <RightPanelContext.Provider value={contextValue}>{children}</RightPanelContext.Provider>;
+  return (
+    <RightPanelContext.Provider value={contextValue}>
+      {loading ? <>{'loading...'}</> : children}
+    </RightPanelContext.Provider>
+  );
 };
 
 export const useRightPanelContext = (): RightPanelContext => {

@@ -33,7 +33,7 @@ import { waitForAlertsToPopulate } from '../../../tasks/create_new_rule';
 
 // Skipping these for now as the feature is protected behind a feature flag set to false by default
 // To run the tests locally, add 'securityFlyoutEnabled' in the Cypress config.ts here https://github.com/elastic/kibana/blob/main/x-pack/test/security_solution_cypress/config.ts#L50
-describe.skip('Alert details expandable flyout right panel', { testIsolation: false }, () => {
+describe('Alert details expandable flyout right panel', { testIsolation: false }, () => {
   before(() => {
     cleanKibana();
     login();
@@ -72,6 +72,7 @@ describe.skip('Alert details expandable flyout right panel', { testIsolation: fa
     cy.get(ALERT_DETAILS_FLYOUT_OVERVIEW_TAB_CONTENT).should('be.visible');
 
     openTableTab();
+    cy.get('[data-test-subj="event-fields-table-row-event.type"]').scrollIntoView(); // hack to make next line work
     cy.get(ALERT_DETAILS_FLYOUT_TABLE_TAB_CONTENT).should('be.visible');
 
     openJsonTab();
