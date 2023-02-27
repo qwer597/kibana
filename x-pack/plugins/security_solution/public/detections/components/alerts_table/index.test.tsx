@@ -20,7 +20,7 @@ import {
   TestProviders,
 } from '../../../common/mock';
 import { GroupedAlertsTableComponent } from './grouped_alerts';
-import { TableId } from '../../../../common/types';
+import { TableId } from '@kbn/securitysolution-data-table/common/types';
 import { useSourcererDataView } from '../../../common/containers/sourcerer';
 import type { UseFieldBrowserOptionsProps } from '../../../timelines/components/fields_browser';
 import { mockCasesContext } from '@kbn/cases-plugin/public/mocks/mock_cases_context';
