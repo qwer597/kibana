@@ -15,6 +15,7 @@ import type { Filter } from '@kbn/es-query';
 import { buildEsQuery } from '@kbn/es-query';
 import { getEsQueryConfig } from '@kbn/data-plugin/common';
 import type { ReactNode } from 'react-markdown';
+import type { TableIdLiteral } from '@kbn/securitysolution-data-table/common/constants';
 import { useGetGroupingSelector } from '../../../common/containers/grouping/hooks/use_get_group_selector';
 import type { Status } from '../../../../common/detection_engine/schemas/common';
 import { defaultGroup } from '../../../common/store/grouping/defaults';
@@ -29,7 +30,6 @@ import type {
 import { GroupingContainer, isNoneGroup } from '../../../common/components/grouping';
 import { useGlobalTime } from '../../../common/containers/use_global_time';
 import { combineQueries } from '../../../common/lib/kuery';
-import type { TableIdLiteral } from '../../../../common/types';
 import { useSourcererDataView } from '../../../common/containers/sourcerer';
 import { useInvalidFilterQuery } from '../../../common/hooks/use_invalid_filter_query';
 import { useKibana } from '../../../common/lib/kibana';
